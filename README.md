@@ -1,25 +1,26 @@
 # Inventory System
 
-A Product Inventory System built with React, Ant Design, Express.js, and MSSQL.
-
-## Features
-- JWT Authentication (Login/Logout)
-- Product CRUD (Create, Read, Update, Delete)
-- Dashboard with statistics
-- Inventory Reports with low stock alerts
+A simple Product Inventory System built for the LLI Developer Assessment.
 
 ## Tech Stack
-- **Frontend:** ReactJS, Ant Design, Axios, React Router
+- **Frontend:** ReactJS, Ant Design, React Router, Axios
 - **Backend:** ExpressJS, Node.js
 - **Database:** Microsoft SQL Server (MSSQL)
 - **Auth:** JWT (JSON Web Token)
 
-## Prerequisites
+## Features
+- Login with JWT authentication
+- Product CRUD (Create, Read, Update, Delete)
+- Search and filter products
+- Dashboard with inventory statistics
+- Inventory report with low stock alerts
+
+## Requirements
 - Node.js v18+
 - SQL Server Express
 - Git
 
-## Setup Instructions
+## How to Run
 
 ### 1. Clone the repository
 ```bash
@@ -29,7 +30,8 @@ cd inventory-system
 
 ### 2. Setup the Database
 - Open SSMS and connect to `localhost\SQLEXPRESS`
-- Run the following SQL:
+- Create the database and tables:
+
 ```sql
 CREATE DATABASE InventoryDB;
 
@@ -39,12 +41,6 @@ CREATE TABLE Users (
   Id INT IDENTITY(1,1) PRIMARY KEY,
   Username NVARCHAR(50) NOT NULL UNIQUE,
   Password NVARCHAR(255) NOT NULL,
-  CreatedAt DATETIME DEFAULT GETDATE()
-);
-
-CREATE TABLE Categories (
-  Id INT IDENTITY(1,1) PRIMARY KEY,
-  Name NVARCHAR(100) NOT NULL UNIQUE,
   CreatedAt DATETIME DEFAULT GETDATE()
 );
 
@@ -64,20 +60,22 @@ CREATE TABLE Products (
 cd backend
 npm install
 ```
+
 Create a `.env` file inside the `backend` folder:
 PORT=5000
 JWT_SECRET=inventorysecretkey123
 DB_SERVER=localhost\SQLEXPRESS
-DB_PORT=1433
 DB_NAME=InventoryDB
 DB_USER=sa
 DB_PASSWORD=YourPasswordHere
 DB_ENCRYPT=false
 DB_TRUST_CERT=true
+
 Seed the admin user:
 ```bash
 node src/seed.js
 ```
+
 Start the backend:
 ```bash
 node src/index.js
@@ -90,22 +88,11 @@ npm install
 npm start
 ```
 
-### 5. Login Credentials
+### 5. Login
 - **Username:** admin
 - **Password:** admin123
 
 ## Challenges Encountered
-- Configuring MSSQL connection with SSL certificate trust issues — resolved by setting `trustServerCertificate: true`
-- SQL Server was running on a non-default port — resolved by querying the error log to find the correct port
-- React Router v6 requires `<Outlet />` for nested routes instead of the old `<Switch>` approach
-
-## API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/login | Login |
-| GET | /api/products | Get all products |
-| POST | /api/products | Create product |
-| PUT | /api/products/:id | Update product |
-| DELETE | /api/products/:id | Delete product |
-| GET | /api/dashboard | Get dashboard stats |
-| GET | /api/reports | Get inventory report |
+- SQL Server SSL certificate issue — resolved by setting `trustServerCertificate: true`
+- SQL Server was running on a non-default port — resolved by querying the error log to find the correct port number
+- React Router v6 uses `<Outlet />` for nested routes instead of the old `<Switch>` approach
