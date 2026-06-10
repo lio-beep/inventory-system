@@ -1,6 +1,6 @@
 # Inventory System
 
-A simple Product Inventory System built for the LLI Developer Assessment.
+Inventory System is a simple web application that allows users to manage products, monitor inventory levels, and generate basic inventory reports through a RESTful API.
 
 ## Tech Stack
 - **Frontend:** ReactJS, Ant Design, React Router, Axios
@@ -63,11 +63,11 @@ npm install
 
 Create a `.env` file inside the `backend` folder:
 PORT=5000
-JWT_SECRET=inventorysecretkey123
+JWT_SECRET=your_jwt_secret
 DB_SERVER=localhost\SQLEXPRESS
 DB_NAME=InventoryDB
-DB_USER=sa
-DB_PASSWORD=YourPasswordHere
+DB_USER=your_sql_username
+DB_PASSWORD=your_sql_password
 DB_ENCRYPT=false
 DB_TRUST_CERT=true
 
@@ -91,6 +91,23 @@ npm start
 ### 5. Login
 - **Username:** admin
 - **Password:** admin123
+
+## API Endpoints
+
+### Authentication
+POST /api/auth/login
+
+### Products
+GET    /api/products
+POST   /api/products
+PUT    /api/products/:id
+DELETE /api/products/:id
+
+### Dashboard
+GET /api/dashboard
+
+### Reports
+GET /api/reports
 
 ## Challenges Encountered
 - SQL Server SSL certificate issue — resolved by setting `trustServerCertificate: true`

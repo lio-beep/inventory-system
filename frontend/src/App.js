@@ -8,8 +8,8 @@ import NotFound from './pages/NotFound';
 import MainLayout from './components/MainLayout';
 
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" />;
+  const token = sessionStorage.getItem('token');
+    return token ? children : <Navigate to="/login" />;
 };
 
 function App() {

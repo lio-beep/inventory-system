@@ -15,8 +15,8 @@ function Login() {
     try {
       const res = await login(values);
       if (res.data.success) {
-        localStorage.setItem('token', res.data.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.data.user));
+        sessionStorage.setItem('token', res.data.data.token);
+        sessionStorage.setItem('user', JSON.stringify(res.data.data.user));
         message.success('Login successful!');
         navigate('/');
       }
