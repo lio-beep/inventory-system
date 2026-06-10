@@ -3,7 +3,7 @@ import {
   Table, Button, Modal, Form, Input,
   InputNumber, Select, message, Popconfirm, Space, Tag
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import {
   getProducts, createProduct, updateProduct, deleteProduct
 } from '../services/api';
@@ -12,9 +12,12 @@ const CATEGORIES = ['Electronics', 'Office Supplies', 'Furniture', 'Food & Bever
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [form] = Form.useForm();
 
   const fetchProducts = async () => {
@@ -22,6 +25,7 @@ function Products() {
     try {
       const res = await getProducts();
       setProducts(res.data.data);
+      setFiltered(res.data.data);
     } catch {
       message.error('Failed to load products');
     } finally {
@@ -31,10 +35,32 @@ function Products() {
 
   useEffect(() => { fetchProducts(); }, []);
 
+  // Search and filter logic
+  useEffect(() => {
+    let result = products;
+
+    if (searchText) {
+      result = result.filter(p =>
+        p.Name.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    if (selectedCategory) {
+      result = result.filter(p => p.Category === selectedCategory);
+    }
+
+    setFiltered(result);
+  }, [searchText, selectedCategory, products]);
+
   const handleOpenModal = (product = null) => {
     setEditingProduct(product);
     if (product) {
-      form.setFieldsValue(product);
+      form.setFieldsValue({
+        name: product.Name,
+        category: product.Category,
+        quantity: product.Quantity,
+        unitPrice: product.UnitPrice,
+      });
     } else {
       form.resetFields();
     }
@@ -67,20 +93,30 @@ function Products() {
     }
   };
 
+  const handleReset = () => {
+    setSearchText('');
+    setSelectedCategory('');
+  };
+
   const columns = [
     { title: 'ID', dataIndex: 'Id', key: 'Id', width: 60 },
-    { title: 'Product Name', dataIndex: 'Name', key: 'Name' },
-    { title: 'Category', dataIndex: 'Category', key: 'Category',
+    { title: 'Product Name', dataIndex: 'Name', key: 'Name', sorter: (a, b) => a.Name.localeCompare(b.Name) },
+    {
+      title: 'Category', dataIndex: 'Category', key: 'Category',
       render: (cat) => <Tag color="blue">{cat}</Tag>
     },
-    { title: 'Quantity', dataIndex: 'Quantity', key: 'Quantity',
+    {
+      title: 'Quantity', dataIndex: 'Quantity', key: 'Quantity',
+      sorter: (a, b) => a.Quantity - b.Quantity,
       render: (qty) => (
         <span style={{ color: qty <= 10 ? '#ff4d4f' : 'inherit', fontWeight: qty <= 10 ? 'bold' : 'normal' }}>
           {qty} {qty <= 10 && '⚠️'}
         </span>
       )
     },
-    { title: 'Unit Price', dataIndex: 'UnitPrice', key: 'UnitPrice',
+    {
+      title: 'Unit Price', dataIndex: 'UnitPrice', key: 'UnitPrice',
+      sorter: (a, b) => a.UnitPrice - b.UnitPrice,
       render: (price) => `₱${parseFloat(price).toFixed(2)}`
     },
     {
@@ -119,10 +155,35 @@ function Products() {
         </Button>
       </div>
 
+      {/* Search and Filter */}
+      <Space style={{ marginBottom: 16 }} wrap>
+        <Input
+          placeholder="Search product name..."
+          prefix={<SearchOutlined />}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: 250 }}
+          allowClear
+        />
+        <Select
+          placeholder="Filter by category"
+          value={selectedCategory || undefined}
+          onChange={(val) => setSelectedCategory(val)}
+          style={{ width: 200 }}
+          allowClear
+        >
+          {CATEGORIES.map(cat => (
+            <Select.Option key={cat} value={cat}>{cat}</Select.Option>
+          ))}
+        </Select>
+        <Button onClick={handleReset}>Reset</Button>
+        <span style={{ color: '#888' }}>{filtered.length} product(s) found</span>
+      </Space>
+
       <Table
         rowKey="Id"
         columns={columns}
-        dataSource={products}
+        dataSource={filtered}
         loading={loading}
         pagination={{ pageSize: 10 }}
       />
@@ -147,11 +208,17 @@ function Products() {
             </Select>
           </Form.Item>
           <Form.Item name="quantity" label="Quantity"
-            rules={[{ required: true, message: 'Please enter quantity' }]}>
+            rules={[
+              { required: true, message: 'Please enter quantity' },
+              { type: 'number', min: 0, message: 'Quantity cannot be negative' }
+            ]}>
             <InputNumber min={0} style={{ width: '100%' }} placeholder="Enter quantity" />
           </Form.Item>
           <Form.Item name="unitPrice" label="Unit Price"
-            rules={[{ required: true, message: 'Please enter unit price' }]}>
+            rules={[
+              { required: true, message: 'Please enter unit price' },
+              { type: 'number', min: 0, message: 'Price cannot be negative' }
+            ]}>
             <InputNumber min={0} step={0.01} style={{ width: '100%' }} placeholder="Enter unit price" />
           </Form.Item>
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
