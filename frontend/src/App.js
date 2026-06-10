@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Reports from './pages/Reports';
+import NotFound from './pages/NotFound';
 import MainLayout from './components/MainLayout';
 
 const PrivateRoute = ({ children }) => {
@@ -25,6 +26,7 @@ function App() {
           <Route path="products" element={<Products />} />
           <Route path="reports" element={<Reports />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
